@@ -1,4 +1,3 @@
-# src/extractor.py
 import subprocess, os
 import cv2
 import numpy as np
