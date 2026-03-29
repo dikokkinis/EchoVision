@@ -22,7 +22,7 @@ class SoundLocalizer:
         audio_emb = self.audio_enc.encode_segment(
             audio_path, start=timestamp
         ) 
-        print("Audio embedding shape:", audio_emb.shape)  # Debug print
+        #print("Audio embedding shape:", audio_emb.shape)  # Debug print
         audio_emb = self.proj(audio_emb) 
         audio_emb = F.normalize(audio_emb, p=2, dim=-1)
 
@@ -31,10 +31,10 @@ class SoundLocalizer:
 
         # Cosine similarity
         a = audio_emb.squeeze(0) 
-        print("Audio embedding shape:", a.shape)
+        #print("Audio embedding shape:", a.shape)
 
         p = patch_embs.view(-1, patch_embs.shape[-1])      
-        print("Patch embeddings reshaped for similarity:", p.shape)   
+        #print("Patch embeddings reshaped for similarity:", p.shape)   
 
         sim = (p @ a).view(16, 16)                       
 
