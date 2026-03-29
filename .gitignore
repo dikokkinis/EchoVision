@@ -1,0 +1,28 @@
+# Virtual Environment (Your specific folder)
+echovision_environment/
+
+# Alternative venv names (just in case)
+venv/
+env/
+ENV/
+
+# Python bytecode/cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables / secrets
+.env
+.venv
+
+# Operating system files
+Thumbs.db
+.DS_Store
+
+# IDE settings 
+.vscode/
+.idea/
+
+#My test extraction output
+test_output/
+*.mp4
