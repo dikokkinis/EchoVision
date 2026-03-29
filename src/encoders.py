@@ -3,21 +3,21 @@ import torch
 import numpy as np
 from transformers import ClapModel, ClapProcessor
 from PIL import Image
+import librosa
 import clip  # pip install git+https://github.com/openai/CLIP.git
 
 class CLAPEncoder:
-    def __init__(self, device="cuda"):
-        self.device = device
+    def __init__(self):
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = ClapModel.from_pretrained(
             "laion/clap-htsat-unfused"
-        ).to(device).eval()
+        ).to(self.device).eval()
         self.processor = ClapProcessor.from_pretrained(
             "laion/clap-htsat-unfused"
         )
 
     @torch.no_grad()
     def encode_segment(self, audio_path: str, start: float, duration: float = 1.0):
-        import librosa
         audio, sr = librosa.load(audio_path, sr=48000,
                                   offset=start, duration=duration)
         inputs = self.processor(
@@ -28,10 +28,10 @@ class CLAPEncoder:
 
 
 class CLIPPatchEncoder:
-    def __init__(self, device="cuda"):
-        self.device = device
+    def __init__(self):
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         # Load ViT-L/14 — gives 16x16=256 patch tokens
-        self.model, self.preprocess = clip.load("ViT-L/14", device=device)
+        self.model, self.preprocess = clip.load("ViT-L/14", device=self.device)
         self.model.eval()
         self.patch_size = 16  # number of patches per side
 
@@ -41,7 +41,6 @@ class CLIPPatchEncoder:
         img = Image.fromarray(frame_bgr[:, :, ::-1])  # BGR→RGB
         x = self.preprocess(img).unsqueeze(0).to(self.device)
 
-        # Hook into ViT to get patch tokens BEFORE global pooling
         patch_tokens = {}
         def hook(module, input, output):
             # output shape: [1, n_patches+1, d] — drop CLS token
