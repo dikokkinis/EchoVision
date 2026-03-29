@@ -1,4 +1,11 @@
-# app.py
+"""
+This is the main application script for EchoVision, a zero-shot audio-visual sound localization tool. 
+======================================================================================================
+Users can upload videos, where video frames and audio are extracted and processed to highlight regions corresponding 
+to the sound sources using CLAP and CLIP encoders. The output is an annotated video showing the localized sound sources.
+
+Usage: Simply run this script, and it will launch a Gradio interface where you can upload your videos and see the results.
+"""
 import gradio as gr
 import tempfile, os
 from src.extractor import extract_frames_and_audio
@@ -40,10 +47,7 @@ demo = gr.Interface(
     title="EchoVision — Zero-Shot Audio-Visual Sound Localization",
     description="Highlights regions of the video frame that correspond "
                 "to the audio using CLAP + CLIP cross-modal attention. "
-                "No training required.",
-    examples=[["assets/examples/dog_barking.mp4"],
-              ["assets/examples/guitar_playing.mp4"]]
 )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(share=True)
