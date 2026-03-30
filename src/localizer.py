@@ -18,26 +18,18 @@ class SoundLocalizer:
             else self.proj.weight
         ) 
 
-    def localize(self, audio_path, frame_bgr, timestamp):
-        audio_emb = self.audio_enc.encode_segment(
-            audio_path, start=timestamp
-        ) 
-        #print("Audio embedding shape:", audio_emb.shape)  # Debug print
-        audio_emb = self.proj(audio_emb) 
+    @torch.no_grad()
+    def localize(self, audio_path: str, frame_bgr, timestamp: float):
+        audio_emb = self.audio_enc.encode_segment(audio_path, start=timestamp)
+        # [1, 512] → [1, 768]
+        audio_emb = self.proj(torch.tensor(audio_emb))
         audio_emb = F.normalize(audio_emb, p=2, dim=-1)
 
-        patch_embs = self.clip_enc.encode_patches(frame_bgr) 
-        print("Patch embeddings shape:", patch_embs.shape)  # Debug print
+        patch_embs = self.clip_enc.encode_patches(frame_bgr)  # [16, 16, 768]
 
-        # Cosine similarity
-        a = audio_emb.squeeze(0) 
-        #print("Audio embedding shape:", a.shape)
+        a = audio_emb.squeeze(0)               # [768]
+        p = patch_embs.view(-1, 768)           # [256, 768]
+        sim = (p @ a).view(16, 16)             # [16, 16]
 
-        p = patch_embs.view(-1, patch_embs.shape[-1])      
-        #print("Patch embeddings reshaped for similarity:", p.shape)   
-
-        sim = (p @ a).view(16, 16)                       
-
-        # Normalize to [0, 1] for heatmap visualization
         sim = (sim - sim.min()) / (sim.max() - sim.min() + 1e-8)
-        return sim.cpu().detach().numpy()
+        return sim.detach().cpu().numpy()
