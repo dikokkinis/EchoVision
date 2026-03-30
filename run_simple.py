@@ -24,6 +24,7 @@ def process_video(video_path, localizer, output_dir):
             out_frames.append(annotated)
 
         # Write output video
+        output_dir = os.mkdir(output_dir) if not os.path.exists(output_dir) else output_dir
         out_path = os.path.join(output_dir, "echovision_output.mp4")
         h, w = out_frames[0].shape[:2]
         writer = cv2.VideoWriter(
