@@ -12,7 +12,7 @@ from src.extractor import extract_frames_and_audio
 from src.encoders import CLAPEncoder, CLIPPatchEncoder
 from src.visualizer import overlay_heatmap
 
-def process_video(video_path, localizer, output_dir):
+def process_video(video_path, localizer, folder):
     with tempfile.TemporaryDirectory() as tmp:
         frames, timestamps, audio_path = extract_frames_and_audio(
             video_path, tmp, fps=2
@@ -24,7 +24,7 @@ def process_video(video_path, localizer, output_dir):
             out_frames.append(annotated)
 
         # Write output video
-        output_dir = os.mkdir(output_dir) if not os.path.exists(output_dir) else output_dir
+        output_dir = os.mkdir(folder) if not os.path.exists(folder) else folder
         out_path = os.path.join(output_dir, "echovision_output.mp4")
         h, w = out_frames[0].shape[:2]
         writer = cv2.VideoWriter(
