@@ -25,9 +25,6 @@ def download_video(url: str, out_path: str):
                     f.write(chunk)
     print(f"Video saved successfully to {out_path}.")
 
-def test_extractor():
-    pass
-
 def main():
     output_dir = "test_output"
     video_url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
