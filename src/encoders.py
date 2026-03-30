@@ -18,17 +18,23 @@ class CLAPEncoder:
         )
 
     @torch.no_grad()
-    def encode_segment(self, audio_path: str, start: float, duration: float = 1.0):
+    def encode_segment(self, audio_path: str, start: float, duration: float = 1.0, debug: bool = False):
         audio, sr = librosa.load(audio_path, sr=48000,
                                   offset=start, duration=duration)
         inputs = self.processor(
             audio=audio, sampling_rate=sr, return_tensors="pt"
         ).to(self.device)
 
-        outputs = self.model.get_audio_features(**inputs)
-        audio_emb = outputs.pooler_output  # [1, 512]
+        audio_outputs = self.model.audio_model(
+        input_features=inputs.input_features,
+        is_longer=inputs.is_longer,
+        )
+        pooled = audio_outputs.pooler_output
+ 
+        # Apply the projection head to get the joint embedding space vector
+        audio_emb = self.model.audio_projection(pooled)  # [1, 512]
         audio_emb = F.normalize(audio_emb, p=2, dim=-1) # L2 normalize
-        return audio_emb
+        return audio_emb.cpu().numpy()
 
 class CLIPPatchEncoder:
     def __init__(self):
