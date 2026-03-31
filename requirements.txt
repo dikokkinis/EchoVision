@@ -19,3 +19,4 @@ torchvision==0.26.0
 tqdm==4.67.3
 transformers==5.4.0
 matplotlib==3.10.8
+yt-dlp==2026.03.17

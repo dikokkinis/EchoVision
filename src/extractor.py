@@ -10,7 +10,7 @@ def extract_frames_and_audio(video_path: str, out_dir: str, fps: int = 1):
     subprocess.run([
         "ffmpeg", "-i", video_path, "-ac", "1", "-ar", "48000",
         audio_path, "-y"
-    ], capture_output=True, check=True)
+    ], capture_output=True)
     # Extract frames at target fps
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
