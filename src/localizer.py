@@ -22,11 +22,11 @@ class SoundLocalizer:
     def localize(self, audio_path: str, frame_bgr, timestamp: float):
         audio_emb = self.audio_enc.encode_segment(audio_path, start=timestamp)
         # [1, 512] → [1, 768]
-        audio_emb = self.proj(torch.tensor(audio_emb))
+        audio_emb = self.proj(torch.tensor(audio_emb).to(self.audio_enc.device))
         audio_emb = F.normalize(audio_emb, p=2, dim=-1)
 
         patch_embs = self.clip_enc.encode_patches(frame_bgr)  # [16, 16, 768]
-
+        patch_embs = patch_embs.to(self.clip_enc.device)
         a = audio_emb.squeeze(0)               # [768]
         p = patch_embs.view(-1, 768)           # [256, 768]
         sim = (p @ a).view(16, 16)             # [16, 16]
